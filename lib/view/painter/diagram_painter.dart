@@ -5,6 +5,8 @@ import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/fret_position.dart';
 import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
 
+final log = logger('DiagramPainter');
+
 const fretboardWith = 300.0;
 const stringGap = 40;
 const stringCount = 6;
@@ -13,7 +15,10 @@ const markingRadius = fretLength / 4;
 const xStart = 50.0;
 const yStart = 100.0;
 
-final log = logger('DiagramPainter');
+const textStyle = TextStyle(
+  color: Colors.white,
+  fontSize: 18,
+);
 
 class DiagramPainter extends CustomPainter {
   final linePainter = Paint()
@@ -21,7 +26,7 @@ class DiagramPainter extends CustomPainter {
     ..style = PaintingStyle.stroke
     ..strokeWidth = 4;
   final markingPainter = Paint()
-    ..color = Colors.red
+    ..color = Colors.blue
     ..style = PaintingStyle.fill
     ..strokeWidth = 4;
 
@@ -31,18 +36,18 @@ class DiagramPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    log.i('Drawing fretboard diagram $fretboardDiagram');
+    // log.i("Painting fretboard");
     _drawStrings(canvas);
     _drawFrets(canvas);
     _drawNoteMarkings(canvas);
   }
 
   FretPosition? getFretPosition(num x, num y) {
-    log.d('Getting fret position of $x, $y');
+    // log.d('Getting fret position of $x, $y');
 
     for (int string = 0; string < stringCount; string++) {
       for (int fret = 0; fret <= fretboardDiagram.fretboard.fretCount; fret++) {
-        final fretPosition = FretPosition(fret: fret, string: string);
+        final fretPosition = FretPosition(fret: fret, string: string + 1);
         final fretPositionCenter = _getFretPositionCenter(fretPosition);
         final distance = sqrt(pow((x - fretPositionCenter.dx), 2) + pow(y - fretPositionCenter.dy, 2));
         // log.d("Distance for $fretPosition: $distance");
@@ -75,12 +80,21 @@ class DiagramPainter extends CustomPainter {
 
   void _drawNoteMarkings(Canvas canvas) {
     fretboardDiagram.markings.forEach((marking) {
-      canvas.drawCircle(_getFretPositionCenter(marking.fretPosition), markingRadius, markingPainter);
+      final center = _getFretPositionCenter(marking.fretPosition);
+      canvas.drawCircle(center, markingRadius, markingPainter);
+      if (marking.scaleValue != null) {
+        final span = TextSpan(text: "${marking.getScaleValue()}", style: textStyle);
+        final textPainter = TextPainter(text: span, textDirection: TextDirection.ltr, textAlign: TextAlign.center);
+        textPainter.layout(minWidth: 0, maxWidth: double.infinity);
+        final drawPosition = Offset(center.dx - textPainter.width / 2, center.dy - (textPainter.height / 2));
+        textPainter.paint(canvas, drawPosition);
+      }
     });
   }
 
   Offset _getFretPositionCenter(FretPosition fretPosition) {
-    final x = xStart + fretPosition.string * stringGap;
+    // log.i('Checking $fretPosition');
+    final x = xStart + (fretPosition.string - 1) * stringGap;
     final y = yStart + fretPosition.fret * fretLength - fretLength / 2;
     return Offset(x, y);
   }

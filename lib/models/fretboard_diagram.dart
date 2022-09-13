@@ -4,14 +4,16 @@ import 'package:fretboard_diagramer/models/note_marking.dart';
 import 'fretboard.dart';
 
 class FretboardDiagram {
+  final String title;
   final Fretboard fretboard;
   final List<NoteMarking> markings;
 
-  FretboardDiagram({required this.fretboard, required this.markings});
+  FretboardDiagram({required this.fretboard, required this.markings, this.title = ""});
 
   FretboardDiagram.empty()
       : fretboard = Fretboard(fretCount: 0),
-        markings = List.empty();
+        markings = List.empty(),
+        title = "";
 
   bool hasNoteMarking(FretPosition fretPosition) {
     return markings.any((m) => m.fretPosition == fretPosition);
@@ -25,8 +27,22 @@ class FretboardDiagram {
 
   FretboardDiagram addNoteMarking(FretPosition fretPosition) {
     final newMarkings = _filterOutNoteMarking(fretPosition);
-    newMarkings.add(NoteMarking(fretPosition: fretPosition));
+    newMarkings.add(NoteMarking(fretPosition: fretPosition, scaleValue: fretboard.getScaleValue(fretPosition)));
     return FretboardDiagram(fretboard: fretboard, markings: newMarkings);
+  }
+
+  FretboardDiagram toggleRoot(FretPosition? root) {
+    final fretboard = Fretboard(
+      fretCount: this.fretboard.fretCount,
+      root: root,
+    );
+    final newMarkings = markings
+        .map((m) => NoteMarking(
+              fretPosition: m.fretPosition,
+              scaleValue: fretboard.getScaleValue(m.fretPosition),
+            ))
+        .toList();
+    return FretboardDiagram(title: title, fretboard: fretboard, markings: newMarkings);
   }
 
   List<NoteMarking> _filterOutNoteMarking(FretPosition fretPosition) {

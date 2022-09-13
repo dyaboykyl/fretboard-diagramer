@@ -120,19 +120,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget fretboardDiagram() {
-    log.d('fretboardDiagramer() called');
     if (!store.diagramVisibile) {
       return const SizedBox.shrink();
     }
 
-    return Listener(
-      onPointerUp: (event) {
-        store.onPointerUp(event.localPosition);
-      },
-      child: CustomPaint(
-        size: const Size(300, 300),
-        painter: store.diagramPainter,
+    return Column(children: [
+      ElevatedButton(
+        onPressed: () => store.onTapSelectRoot(),
+        child: const Text('Select Root'),
       ),
-    );
+      Listener(
+        onPointerUp: (event) {
+          store.onPointerUp(event.localPosition);
+        },
+        child: CustomPaint(
+          size: const Size(500, 500),
+          painter: store.diagramPainter,
+        ),
+      ),
+    ]);
   }
 }

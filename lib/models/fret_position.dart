@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class FretPosition {
   final int fret;
   final int string;
@@ -14,7 +12,6 @@ class FretPosition {
 
   @override
   String toString() {
-    // TODO: implement toString
     return "string=$string, fret=$fret";
   }
 }

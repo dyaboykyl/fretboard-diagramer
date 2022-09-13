@@ -47,6 +47,22 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
     });
   }
 
+  late final _$selectingRootAtom =
+      Atom(name: '_DiagramerStore.selectingRoot', context: context);
+
+  @override
+  bool get selectingRoot {
+    _$selectingRootAtom.reportRead();
+    return super.selectingRoot;
+  }
+
+  @override
+  set selectingRoot(bool value) {
+    _$selectingRootAtom.reportWrite(value, super.selectingRoot, () {
+      super.selectingRoot = value;
+    });
+  }
+
   late final _$_DiagramerStoreActionController =
       ActionController(name: '_DiagramerStore', context: context);
 
@@ -56,6 +72,17 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
         name: '_DiagramerStore.onTapNewDiagram');
     try {
       return super.onTapNewDiagram();
+    } finally {
+      _$_DiagramerStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic onTapSelectRoot() {
+    final _$actionInfo = _$_DiagramerStoreActionController.startAction(
+        name: '_DiagramerStore.onTapSelectRoot');
+    try {
+      return super.onTapSelectRoot();
     } finally {
       _$_DiagramerStoreActionController.endAction(_$actionInfo);
     }
@@ -75,6 +102,7 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
   @override
   String toString() {
     return '''
+selectingRoot: ${selectingRoot},
 diagramVisibile: ${diagramVisibile},
 currentDiagram: ${currentDiagram},
 diagramPainter: ${diagramPainter}

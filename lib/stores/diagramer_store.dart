@@ -15,6 +15,9 @@ abstract class _DiagramerStore with Store {
   @observable
   FretboardDiagram? _currentDiagram;
 
+  @observable
+  bool selectingRoot = false;
+
   @computed
   bool get diagramVisibile => _currentDiagram != null;
 
@@ -35,6 +38,11 @@ abstract class _DiagramerStore with Store {
   }
 
   @action
+  onTapSelectRoot() {
+    selectingRoot = !selectingRoot;
+  }
+
+  @action
   onPointerUp(Offset pointer) {
     final fretPosition = diagramPainter.getFretPosition(pointer.dx, pointer.dy);
     if (fretPosition == null) {
@@ -42,10 +50,16 @@ abstract class _DiagramerStore with Store {
     }
 
     log.i('Determined pointer touched fret position: $fretPosition');
-    if (currentDiagram.hasNoteMarking(fretPosition)) {
-      _currentDiagram = currentDiagram.removeNoteMarking(fretPosition);
+    if (selectingRoot) {
+      log.i("Toggling root");
+      selectingRoot = false;
+      _currentDiagram = currentDiagram.toggleRoot(fretPosition);
     } else {
-      _currentDiagram = currentDiagram.addNoteMarking(fretPosition);
+      if (currentDiagram.hasNoteMarking(fretPosition)) {
+        _currentDiagram = currentDiagram.removeNoteMarking(fretPosition);
+      } else {
+        _currentDiagram = currentDiagram.addNoteMarking(fretPosition);
+      }
     }
   }
 }
