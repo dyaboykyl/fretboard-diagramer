@@ -19,6 +19,10 @@ class FretboardDiagram {
     return markings.any((m) => m.fretPosition == fretPosition);
   }
 
+  bool hasScaleValue(int scaleValue) {
+    return markings.any((m) => m.scaleValue == scaleValue);
+  }
+
   FretboardDiagram removeNoteMarking(FretPosition fretPosition) {
     final newMarkings = markings.toList();
     newMarkings.retainWhere((m) => m.fretPosition != fretPosition);

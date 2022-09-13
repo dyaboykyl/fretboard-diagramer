@@ -83,7 +83,7 @@ class DiagramPainter extends CustomPainter {
       final center = _getFretPositionCenter(marking.fretPosition);
       canvas.drawCircle(center, markingRadius, markingPainter);
       if (marking.scaleValue != null) {
-        final span = TextSpan(text: "${marking.getScaleValue()}", style: textStyle);
+        final span = TextSpan(text: "${marking.getScaleValue(fretboardDiagram)}", style: textStyle);
         final textPainter = TextPainter(text: span, textDirection: TextDirection.ltr, textAlign: TextAlign.center);
         textPainter.layout(minWidth: 0, maxWidth: double.infinity);
         final drawPosition = Offset(center.dx - textPainter.width / 2, center.dy - (textPainter.height / 2));
