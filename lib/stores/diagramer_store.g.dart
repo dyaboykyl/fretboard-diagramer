@@ -16,20 +16,34 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
       (_$diagramVisibileComputed ??= Computed<bool>(() => super.diagramVisibile,
               name: '_DiagramerStore.diagramVisibile'))
           .value;
-
-  late final _$currentDiagramAtom =
-      Atom(name: '_DiagramerStore.currentDiagram', context: context);
+  Computed<FretboardDiagram>? _$currentDiagramComputed;
 
   @override
-  FretboardDiagram? get currentDiagram {
-    _$currentDiagramAtom.reportRead();
-    return super.currentDiagram;
+  FretboardDiagram get currentDiagram => (_$currentDiagramComputed ??=
+          Computed<FretboardDiagram>(() => super.currentDiagram,
+              name: '_DiagramerStore.currentDiagram'))
+      .value;
+  Computed<DiagramPainter>? _$diagramPainterComputed;
+
+  @override
+  DiagramPainter get diagramPainter => (_$diagramPainterComputed ??=
+          Computed<DiagramPainter>(() => super.diagramPainter,
+              name: '_DiagramerStore.diagramPainter'))
+      .value;
+
+  late final _$_currentDiagramAtom =
+      Atom(name: '_DiagramerStore._currentDiagram', context: context);
+
+  @override
+  FretboardDiagram? get _currentDiagram {
+    _$_currentDiagramAtom.reportRead();
+    return super._currentDiagram;
   }
 
   @override
-  set currentDiagram(FretboardDiagram? value) {
-    _$currentDiagramAtom.reportWrite(value, super.currentDiagram, () {
-      super.currentDiagram = value;
+  set _currentDiagram(FretboardDiagram? value) {
+    _$_currentDiagramAtom.reportWrite(value, super._currentDiagram, () {
+      super._currentDiagram = value;
     });
   }
 
@@ -48,10 +62,22 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
   }
 
   @override
+  dynamic onPointerUp(Offset pointer) {
+    final _$actionInfo = _$_DiagramerStoreActionController.startAction(
+        name: '_DiagramerStore.onPointerUp');
+    try {
+      return super.onPointerUp(pointer);
+    } finally {
+      _$_DiagramerStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
+diagramVisibile: ${diagramVisibile},
 currentDiagram: ${currentDiagram},
-diagramVisibile: ${diagramVisibile}
+diagramPainter: ${diagramPainter}
     ''';
   }
 }

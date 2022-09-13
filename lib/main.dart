@@ -57,6 +57,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final store = DiagramerStore();
   int _counter = 0;
+  GlobalKey _paintKey = new GlobalKey();
 
   void _incrementCounter() {
     setState(() {
@@ -124,10 +125,14 @@ class _MyHomePageState extends State<MyHomePage> {
       return const SizedBox.shrink();
     }
 
-    log.i('fretboardDiagram is not null: ${store.currentDiagram}');
-    return CustomPaint(
-      size: const Size(300, 300),
-      painter: DiagramPainter(store.currentDiagram!),
+    return Listener(
+      onPointerUp: (event) {
+        store.onPointerUp(event.localPosition);
+      },
+      child: CustomPaint(
+        size: const Size(300, 300),
+        painter: store.diagramPainter,
+      ),
     );
   }
 }

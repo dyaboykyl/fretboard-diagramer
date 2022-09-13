@@ -1,6 +1,7 @@
-class NoteMarking {
-  final int fret;
-  final int string;
+import 'package:fretboard_diagramer/models/fret_position.dart';
 
-  NoteMarking({required this.fret, required this.string});
+class NoteMarking {
+  final FretPosition fretPosition;
+
+  NoteMarking({required this.fretPosition});
 }

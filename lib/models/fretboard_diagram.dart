@@ -1,3 +1,4 @@
+import 'package:fretboard_diagramer/models/fret_position.dart';
 import 'package:fretboard_diagramer/models/note_marking.dart';
 
 import 'fretboard.dart';
@@ -7,4 +8,30 @@ class FretboardDiagram {
   final List<NoteMarking> markings;
 
   FretboardDiagram({required this.fretboard, required this.markings});
+
+  FretboardDiagram.empty()
+      : fretboard = Fretboard(fretCount: 0),
+        markings = List.empty();
+
+  bool hasNoteMarking(FretPosition fretPosition) {
+    return markings.any((m) => m.fretPosition == fretPosition);
+  }
+
+  FretboardDiagram removeNoteMarking(FretPosition fretPosition) {
+    final newMarkings = markings.toList();
+    newMarkings.retainWhere((m) => m.fretPosition != fretPosition);
+    return FretboardDiagram(fretboard: fretboard, markings: _filterOutNoteMarking(fretPosition));
+  }
+
+  FretboardDiagram addNoteMarking(FretPosition fretPosition) {
+    final newMarkings = _filterOutNoteMarking(fretPosition);
+    newMarkings.add(NoteMarking(fretPosition: fretPosition));
+    return FretboardDiagram(fretboard: fretboard, markings: newMarkings);
+  }
+
+  List<NoteMarking> _filterOutNoteMarking(FretPosition fretPosition) {
+    final newMarkings = markings.toList();
+    newMarkings.retainWhere((m) => m.fretPosition != fretPosition);
+    return newMarkings;
+  }
 }
