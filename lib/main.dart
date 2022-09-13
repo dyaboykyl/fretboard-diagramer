@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fretboard_diagramer/logging/logging.dart';
+import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
+import 'package:fretboard_diagramer/stores/diagramer_store.dart';
+import 'package:fretboard_diagramer/utils.dart';
+import 'package:fretboard_diagramer/view/painter/diagram_painter.dart';
+
+final log = logger('Main');
 
 void main() {
   runApp(const MyApp());
@@ -48,6 +55,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final store = DiagramerStore();
   int _counter = 0;
 
   void _incrementCounter() {
@@ -96,20 +104,30 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'New fretboard',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            observer(() => fretboardDiagram())
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () => store.onTapNewDiagram(),
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget fretboardDiagram() {
+    log.d('fretboardDiagramer() called');
+    if (!store.diagramVisibile) {
+      return const SizedBox.shrink();
+    }
+
+    log.i('fretboardDiagram is not null: ${store.currentDiagram}');
+    return CustomPaint(
+      size: const Size(300, 300),
+      painter: DiagramPainter(store.currentDiagram!),
     );
   }
 }
