@@ -28,7 +28,7 @@ class BlockButton extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 14),
           color: usePrimaryColor
               ? Theme.of(context).primaryColor
-              : Theme.of(context).accentColor,
+              : Theme.of(context).colorScheme.secondary,
           child: isLoading
               ? SizedBox(
                   width: 20,
