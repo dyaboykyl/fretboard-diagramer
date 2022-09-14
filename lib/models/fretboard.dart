@@ -1,16 +1,17 @@
 import 'package:fretboard_diagramer/models/fret_position.dart';
+import 'package:fretboard_diagramer/models/scale_value.dart';
 
 class Fretboard {
   final int fretCount;
   final FretPosition? root;
-  final Map<FretPosition, int> scaleValues = {};
+  final Map<FretPosition, ScaleValue> scaleValues = {};
 
   Fretboard({required this.fretCount, this.root}) {
     _setScaleValues();
   }
 
-  int? getScaleValue(FretPosition fretPosition) {
-    return scaleValues[fretPosition];
+  ScaleValue getScaleValue(FretPosition fretPosition) {
+    return scaleValues[fretPosition] ?? ScaleValue.none;
   }
 
   void _setScaleValues() {
@@ -19,7 +20,7 @@ class Fretboard {
     }
 
     final root = this.root!;
-    int scaleValue = 1;
+    ScaleValue scaleValue = ScaleValue.tonic;
     int string = root.string;
     int fret = root.fret;
     // walk down
@@ -27,45 +28,37 @@ class Fretboard {
       while (fret >= 0) {
         final position = FretPosition(fret: fret, string: string);
         scaleValues[position] = scaleValue;
-        scaleValue = _previousScaleValue(scaleValue);
+        scaleValue--;
         fret--;
       }
       string--;
       fret = string == 4 ? 4 : 5;
-      scaleValue = _nextScaleValue(scaleValue);
+      scaleValue++;
       while (fret < fretCount) {
         fret++;
-        scaleValue = _nextScaleValue(scaleValue);
+        scaleValue++;
       }
     }
 
-    scaleValue = 1;
+    scaleValue = ScaleValue.tonic;
     string = root.string;
     fret = root.fret;
     while (string <= 6) {
       while (fret <= fretCount) {
         final position = FretPosition(fret: fret, string: string);
         scaleValues[position] = scaleValue;
-        scaleValue = _nextScaleValue(scaleValue);
+        scaleValue++;
         fret++;
       }
 
       final nextStringFret = string == 4 ? 4 : 5;
       while (fret > nextStringFret) {
         fret--;
-        scaleValue = _previousScaleValue(scaleValue);
+        scaleValue--;
       }
 
       string++;
       fret = 0;
     }
-  }
-
-  int _previousScaleValue(int scaleValue) {
-    return (scaleValue == 1) ? 12 : scaleValue - 1;
-  }
-
-  int _nextScaleValue(int scaleValue) {
-    return (scaleValue == 12) ? 1 : scaleValue + 1;
   }
 }

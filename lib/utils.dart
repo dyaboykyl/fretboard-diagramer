@@ -23,7 +23,7 @@ T nonmatchingFunc<T, K>(T a, T b, K key, K Function(T) matcher) {
   return matcher(a) == key ? b : a;
 }
 
-final encoder = JsonEncoder();
+const encoder = JsonEncoder();
 String toStringHelper(dynamic object) {
   return (object is Map<dynamic, dynamic>) ? encoder.convert(object) : encoder.convert(object.toJson());
 }
@@ -41,7 +41,7 @@ String capitalize(String text) {
 }
 
 String pluralize(int amount, String text) {
-  return '$text' + (amount == 1 ? '' : 's');
+  return text + (amount == 1 ? '' : 's');
 }
 
 Duration timeUntil(DateTime timeout) {

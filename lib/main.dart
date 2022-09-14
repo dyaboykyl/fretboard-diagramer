@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
-import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
 import 'package:fretboard_diagramer/stores/diagramer_store.dart';
 import 'package:fretboard_diagramer/utils.dart';
-import 'package:fretboard_diagramer/view/painter/diagram_painter.dart';
 
 final log = logger('Main');
 
@@ -138,6 +136,12 @@ class _MyHomePageState extends State<MyHomePage> {
           painter: store.diagramPainter,
         ),
       ),
+      Text(store.currentDiagram.title),
+      ElevatedButton(
+          onPressed: () => store.toggleShowAllScaleValues(),
+          child: Text(
+            store.displayAllScaleValuesString,
+          )),
     ]);
   }
 }

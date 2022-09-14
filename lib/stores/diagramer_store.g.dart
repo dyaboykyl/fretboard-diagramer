@@ -16,6 +16,14 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
       (_$diagramVisibileComputed ??= Computed<bool>(() => super.diagramVisibile,
               name: '_DiagramerStore.diagramVisibile'))
           .value;
+  Computed<String>? _$displayAllScaleValuesStringComputed;
+
+  @override
+  String get displayAllScaleValuesString =>
+      (_$displayAllScaleValuesStringComputed ??= Computed<String>(
+              () => super.displayAllScaleValuesString,
+              name: '_DiagramerStore.displayAllScaleValuesString'))
+          .value;
   Computed<FretboardDiagram>? _$currentDiagramComputed;
 
   @override
@@ -63,6 +71,22 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
     });
   }
 
+  late final _$diagramViewOptionsAtom =
+      Atom(name: '_DiagramerStore.diagramViewOptions', context: context);
+
+  @override
+  DiagramViewOptions get diagramViewOptions {
+    _$diagramViewOptionsAtom.reportRead();
+    return super.diagramViewOptions;
+  }
+
+  @override
+  set diagramViewOptions(DiagramViewOptions value) {
+    _$diagramViewOptionsAtom.reportWrite(value, super.diagramViewOptions, () {
+      super.diagramViewOptions = value;
+    });
+  }
+
   late final _$_DiagramerStoreActionController =
       ActionController(name: '_DiagramerStore', context: context);
 
@@ -89,6 +113,17 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
   }
 
   @override
+  dynamic toggleShowAllScaleValues() {
+    final _$actionInfo = _$_DiagramerStoreActionController.startAction(
+        name: '_DiagramerStore.toggleShowAllScaleValues');
+    try {
+      return super.toggleShowAllScaleValues();
+    } finally {
+      _$_DiagramerStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic onPointerUp(Offset pointer) {
     final _$actionInfo = _$_DiagramerStoreActionController.startAction(
         name: '_DiagramerStore.onPointerUp');
@@ -103,7 +138,9 @@ mixin _$DiagramerStore on _DiagramerStore, Store {
   String toString() {
     return '''
 selectingRoot: ${selectingRoot},
+diagramViewOptions: ${diagramViewOptions},
 diagramVisibile: ${diagramVisibile},
+displayAllScaleValuesString: ${displayAllScaleValuesString},
 currentDiagram: ${currentDiagram},
 diagramPainter: ${diagramPainter}
     ''';

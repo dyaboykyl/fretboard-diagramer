@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/fret_position.dart';
 import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
+import 'package:fretboard_diagramer/models/scale_value.dart';
+import 'package:fretboard_diagramer/view/painter/diagram_view_options.dart';
 
 final log = logger('DiagramPainter');
 
@@ -12,11 +14,17 @@ const stringGap = 40;
 const stringCount = 6;
 const fretLength = 50.0;
 const markingRadius = fretLength / 4;
-const xStart = 50.0;
-const yStart = 100.0;
+const xStart = fretboardWith / 2;
+const yStart = 50.0;
+const nonTonicColor = Colors.blue;
+const tonicColor = Colors.red;
 
-const textStyle = TextStyle(
+const noteTextStyle = TextStyle(
   color: Colors.white,
+  fontSize: 18,
+);
+const backgroudNoteTextStyle = TextStyle(
+  color: Colors.grey,
   fontSize: 18,
 );
 
@@ -26,13 +34,14 @@ class DiagramPainter extends CustomPainter {
     ..style = PaintingStyle.stroke
     ..strokeWidth = 4;
   final markingPainter = Paint()
-    ..color = Colors.blue
+    ..color = nonTonicColor
     ..style = PaintingStyle.fill
     ..strokeWidth = 4;
 
   final FretboardDiagram fretboardDiagram;
+  final DiagramViewOptions diagramViewOptions;
 
-  DiagramPainter(this.fretboardDiagram);
+  DiagramPainter(this.fretboardDiagram, this.diagramViewOptions);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -79,17 +88,36 @@ class DiagramPainter extends CustomPainter {
   }
 
   void _drawNoteMarkings(Canvas canvas) {
-    fretboardDiagram.markings.forEach((marking) {
-      final center = _getFretPositionCenter(marking.fretPosition);
-      canvas.drawCircle(center, markingRadius, markingPainter);
-      if (marking.scaleValue != null) {
-        final span = TextSpan(text: "${marking.getScaleValue(fretboardDiagram)}", style: textStyle);
-        final textPainter = TextPainter(text: span, textDirection: TextDirection.ltr, textAlign: TextAlign.center);
-        textPainter.layout(minWidth: 0, maxWidth: double.infinity);
-        final drawPosition = Offset(center.dx - textPainter.width / 2, center.dy - (textPainter.height / 2));
-        textPainter.paint(canvas, drawPosition);
+    for (int string = 0; string < stringCount; string++) {
+      for (int fret = 0; fret <= fretboardDiagram.fretboard.fretCount; fret++) {
+        final fretPosition = FretPosition(fret: fret, string: string + 1);
+        final center = _getFretPositionCenter(fretPosition);
+        final hasNoteMarking = fretboardDiagram.hasNoteMarking(fretPosition);
+        final scaleValue = fretboardDiagram.fretboard.getScaleValue(fretPosition);
+        if (hasNoteMarking) {
+          if (scaleValue == ScaleValue.tonic) {
+            markingPainter.color = tonicColor;
+          }
+          canvas.drawCircle(center, markingRadius, markingPainter);
+          markingPainter.color = nonTonicColor;
+        }
+
+        if (scaleValue != ScaleValue.none && (diagramViewOptions.displayAllScaleValues || hasNoteMarking)) {
+          final span = TextSpan(
+            text: "${scaleValue.chordRepresentation(fretboardDiagram)}",
+            style: hasNoteMarking ? noteTextStyle : backgroudNoteTextStyle,
+          );
+          final textPainter = TextPainter(
+            text: span,
+            textDirection: TextDirection.ltr,
+            textAlign: TextAlign.center,
+          );
+          textPainter.layout(minWidth: 0, maxWidth: double.infinity);
+          final drawPosition = Offset(center.dx - textPainter.width / 2, center.dy - (textPainter.height / 2));
+          textPainter.paint(canvas, drawPosition);
+        }
       }
-    });
+    }
   }
 
   Offset _getFretPositionCenter(FretPosition fretPosition) {

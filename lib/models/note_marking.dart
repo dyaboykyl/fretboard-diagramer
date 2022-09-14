@@ -1,32 +1,28 @@
 import 'package:fretboard_diagramer/models/fret_position.dart';
 import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
+import 'package:fretboard_diagramer/models/scale_value.dart';
 
 class NoteMarking {
   final FretPosition fretPosition;
-  final int? scaleValue;
+  final ScaleValue scaleValue;
 
-  NoteMarking({required this.fretPosition, this.scaleValue});
+  NoteMarking({required this.fretPosition, this.scaleValue = ScaleValue.none});
 
   String? getScaleValue(FretboardDiagram diagram) {
-    final dominant = diagram.hasScaleValue(11) && diagram.hasScaleValue(5);
-    final hasSeventh = diagram.hasScaleValue(12) || diagram.hasScaleValue(11);
-    final majorSeventh = diagram.hasScaleValue(12);
-    final minorSeventh = (diagram.hasScaleValue(11) && diagram.hasScaleValue(4) && !diagram.hasScaleValue(5));
-    final hasSixth = diagram.hasScaleValue(10);
-    final second = hasSeventh || hasSixth ? '9' : '2';
+    final second = diagram.hasSeventh || diagram.hasSixth ? '9' : '2';
     final scaleValueMap = {
-      1: 'R',
-      2: 'b$second',
-      3: second,
-      4: dominant ? '#9' : 'b3',
-      5: '3',
-      6: hasSeventh ? '11' : '4',
-      7: dominant || majorSeventh ? '#11' : 'b5',
-      8: '5',
-      9: dominant ? 'b13' : 'b6',
-      10: dominant || minorSeventh ? '13' : '6',
-      11: 'b7',
-      12: '7',
+      ScaleValue.tonic: 'R',
+      ScaleValue.minorSecond: 'b$second',
+      ScaleValue.second: second,
+      ScaleValue.minorThird: diagram.dominant ? '#9' : 'b3',
+      ScaleValue.majorThird: '3',
+      ScaleValue.fourth: diagram.hasSeventh ? '11' : '4',
+      ScaleValue.tritone: diagram.dominant || diagram.majorSeventh ? '#11' : 'b5',
+      ScaleValue.fifth: '5',
+      ScaleValue.minorSixth: diagram.dominant ? 'b13' : '#5',
+      ScaleValue.sixth: diagram.dominant || diagram.minorSeventh ? '13' : '6',
+      ScaleValue.minorSeventh: 'b7',
+      ScaleValue.majorSeventh: '7',
     };
     return scaleValueMap[scaleValue];
   }

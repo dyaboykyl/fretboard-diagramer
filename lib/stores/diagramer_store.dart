@@ -1,8 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/fretboard.dart';
 import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
 import 'package:fretboard_diagramer/view/painter/diagram_painter.dart';
+import 'package:fretboard_diagramer/view/painter/diagram_view_options.dart';
 import 'package:mobx/mobx.dart';
 
 part 'diagramer_store.g.dart';
@@ -18,14 +21,20 @@ abstract class _DiagramerStore with Store {
   @observable
   bool selectingRoot = false;
 
+  @observable
+  DiagramViewOptions diagramViewOptions = DiagramViewOptions(displayAllScaleValues: false);
+
   @computed
   bool get diagramVisibile => _currentDiagram != null;
+
+  @computed
+  String get displayAllScaleValuesString => diagramViewOptions.displayAllScaleValues ? "Don't display scale values" : "Display scale values";
 
   @computed
   FretboardDiagram get currentDiagram => _currentDiagram ?? FretboardDiagram.empty();
 
   @computed
-  DiagramPainter get diagramPainter => DiagramPainter(currentDiagram);
+  DiagramPainter get diagramPainter => DiagramPainter(currentDiagram, diagramViewOptions);
 
   @action
   onTapNewDiagram() {
@@ -40,6 +49,11 @@ abstract class _DiagramerStore with Store {
   @action
   onTapSelectRoot() {
     selectingRoot = !selectingRoot;
+  }
+
+  @action
+  toggleShowAllScaleValues() {
+    diagramViewOptions = DiagramViewOptions(displayAllScaleValues: !diagramViewOptions.displayAllScaleValues);
   }
 
   @action

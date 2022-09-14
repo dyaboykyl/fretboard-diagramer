@@ -5,16 +5,16 @@ class SimpleLogPrinter extends LogPrinter {
   SimpleLogPrinter(this.className);
 
   @override
-  List<String> log(LogEvent logEvent) {
-    var color = PrettyPrinter.levelColors[logEvent.level]!;
+  List<String> log(LogEvent event) {
+    var color = PrettyPrinter.levelColors[event.level]!;
     final errorColor = PrettyPrinter.levelColors[Level.error]!;
     final timestamp = DateTime.now().toLocal();
-    final messages = [color('$timestamp $className - ${logEvent.message}')];
-    if (logEvent.error != null) {
-      messages.add(errorColor('${logEvent.error}'));
+    final messages = [color('$timestamp $className - ${event.message}')];
+    if (event.error != null) {
+      messages.add(errorColor('${event.error}'));
     }
-    if (logEvent.stackTrace != null) {
-      logEvent.stackTrace.toString().split('\n').take(8).forEach((line) {
+    if (event.stackTrace != null) {
+      event.stackTrace.toString().split('\n').take(8).forEach((line) {
         messages.add(errorColor(line));
       });
     }
