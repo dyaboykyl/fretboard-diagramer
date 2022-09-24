@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/stores/diagramer_store.dart';
 import 'package:fretboard_diagramer/utils.dart';
+import 'package:fretboard_diagramer/view/diagram/fretboard_diagram_widget.dart';
 
 final log = logger('Main');
 
@@ -54,19 +55,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final store = DiagramerStore();
-  int _counter = 0;
-  GlobalKey _paintKey = new GlobalKey();
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'New fretboard',
             ),
-            observer(() => fretboardDiagram())
+            observer(() => FretboardDiagramWidget(store: store, size: 500))
           ],
         ),
       ),
@@ -115,33 +103,5 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  Widget fretboardDiagram() {
-    if (!store.diagramVisibile) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(children: [
-      ElevatedButton(
-        onPressed: () => store.onTapSelectRoot(),
-        child: const Text('Select Root'),
-      ),
-      Listener(
-        onPointerUp: (event) {
-          store.onPointerUp(event.localPosition);
-        },
-        child: CustomPaint(
-          size: const Size(500, 500),
-          painter: store.diagramPainter,
-        ),
-      ),
-      Text(store.currentDiagram.title),
-      ElevatedButton(
-          onPressed: () => store.toggleShowAllScaleValues(),
-          child: Text(
-            store.displayAllScaleValuesString,
-          )),
-    ]);
   }
 }

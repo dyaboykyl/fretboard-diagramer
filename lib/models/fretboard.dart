@@ -3,26 +3,26 @@ import 'package:fretboard_diagramer/models/scale_value.dart';
 
 class Fretboard {
   final int fretCount;
-  final FretPosition? root;
+  final FretPosition? rootFret;
   final Map<FretPosition, ScaleValue> scaleValues = {};
+  ScaleValue get root => getScaleValue(rootFret);
 
-  Fretboard({required this.fretCount, this.root}) {
+  Fretboard({required this.fretCount, this.rootFret}) {
     _setScaleValues();
   }
 
-  ScaleValue getScaleValue(FretPosition fretPosition) {
+  ScaleValue getScaleValue(FretPosition? fretPosition) {
     return scaleValues[fretPosition] ?? ScaleValue.none;
   }
 
   void _setScaleValues() {
-    if (this.root == null) {
+    if (rootFret == null) {
       return;
     }
 
-    final root = this.root!;
     ScaleValue scaleValue = ScaleValue.tonic;
-    int string = root.string;
-    int fret = root.fret;
+    int string = rootFret!.string;
+    int fret = rootFret!.fret;
     // walk down
     while (string > 0) {
       while (fret >= 0) {
@@ -41,8 +41,8 @@ class Fretboard {
     }
 
     scaleValue = ScaleValue.tonic;
-    string = root.string;
-    fret = root.fret;
+    string = rootFret!.string;
+    fret = rootFret!.fret;
     while (string <= 6) {
       while (fret <= fretCount) {
         final position = FretPosition(fret: fret, string: string);

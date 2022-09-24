@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/fretboard.dart';
 import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
-import 'package:fretboard_diagramer/view/painter/diagram_painter.dart';
-import 'package:fretboard_diagramer/view/painter/diagram_view_options.dart';
+import 'package:fretboard_diagramer/view/diagram/diagram_painter.dart';
+import 'package:fretboard_diagramer/view/diagram/diagram_view_options.dart';
 import 'package:mobx/mobx.dart';
 
 part 'diagramer_store.g.dart';

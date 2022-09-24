@@ -5,7 +5,7 @@ import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/fret_position.dart';
 import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
 import 'package:fretboard_diagramer/models/scale_value.dart';
-import 'package:fretboard_diagramer/view/painter/diagram_view_options.dart';
+import 'package:fretboard_diagramer/view/diagram/diagram_view_options.dart';
 
 final log = logger('DiagramPainter');
 
@@ -104,7 +104,7 @@ class DiagramPainter extends CustomPainter {
 
         if (scaleValue != ScaleValue.none && (diagramViewOptions.displayAllScaleValues || hasNoteMarking)) {
           final span = TextSpan(
-            text: "${scaleValue.chordRepresentation(fretboardDiagram)}",
+            text: "${scaleValue.chordRepresentation(fretboardDiagram.chord)}",
             style: hasNoteMarking ? noteTextStyle : backgroudNoteTextStyle,
           );
           final textPainter = TextPainter(
