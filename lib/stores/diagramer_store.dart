@@ -38,6 +38,7 @@ abstract class _DiagramerStore with Store {
 
   @action
   onTapNewDiagram() {
+    log.d('newDiagram tapped');
     _currentDiagram = FretboardDiagram(
       fretboard: Fretboard(
         fretCount: 5,

@@ -93,7 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'New fretboard',
             ),
-            observer(() => FretboardDiagramWidget(store: store, size: 500))
+            observer(() => Visibility(
+                  visible: store.diagramVisibile,
+                  child: FretboardDiagramWidget(store: store, size: 500),
+                )),
           ],
         ),
       ),

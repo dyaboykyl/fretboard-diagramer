@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/fret_position.dart';
 import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
+import 'package:fretboard_diagramer/models/note.dart';
 import 'package:fretboard_diagramer/models/scale_value.dart';
 import 'package:fretboard_diagramer/view/diagram/diagram_view_options.dart';
 
@@ -45,7 +46,8 @@ class DiagramPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // log.i("Painting fretboard");
+    final note = Note.note(5);
+    log.i("Painting fretboard. $note, ${note.copyWith(duration: 4)}");
     _drawStrings(canvas);
     _drawFrets(canvas);
     _drawNoteMarkings(canvas);
