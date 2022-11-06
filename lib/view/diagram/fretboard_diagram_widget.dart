@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/stores/diagramer_store.dart';
 import 'package:fretboard_diagramer/utils.dart';
+import 'package:fretboard_diagramer/view/diagram/fretboard_widget.dart';
 
 class FretboardDiagramWidget extends StatefulWidget {
   final DiagramerStore store;
@@ -27,14 +28,15 @@ class _FretboardDiagramState extends State<FretboardDiagramWidget> {
             child: const Text('Select Root'),
           ),
           Listener(
-            onPointerUp: (event) {
-              store.onPointerUp(event.localPosition);
-            },
-            child: CustomPaint(
-              size: Size(widget.size, widget.size),
-              painter: store.diagramPainter,
-            ),
-          ),
+              onPointerUp: (event) {
+                store.onPointerUp(event.localPosition);
+              },
+              child: FretboardWidget(store.currentDiagram, Size(400, 600))
+              // child: CustomPaint(
+              //   size: Size(widget.size, widget.size),
+              //   painter: store.diagramPainter,
+              // ),
+              ),
           Text(store.currentDiagram.title),
           ElevatedButton(
               onPressed: () => store.toggleShowAllScaleValues(),
