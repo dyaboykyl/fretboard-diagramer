@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
+import 'package:fretboard_diagramer/models/melody.dart';
 import 'package:fretboard_diagramer/stores/diagramer_store.dart';
-import 'package:fretboard_diagramer/utils.dart';
-import 'package:fretboard_diagramer/view/diagram/fretboard_diagram_widget.dart';
+import 'package:fretboard_diagramer/view/staff/staff_widget.dart';
+import 'package:fretboard_diagramer/view/staff/staff_widget_store.dart';
 
 final log = logger('Main');
 
@@ -90,13 +91,17 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'New fretboard',
-            ),
-            observer(() => Visibility(
-                  visible: store.diagramVisibile,
-                  child: FretboardDiagramWidget(store: store, size: 500),
-                )),
+            StaffWidget(StaffWidgetStore(
+              const Size(600, 200),
+              Melody.empty().add(Note(value: 60, duration: 4)),
+            )),
+            // const Text(
+            //   'New fretboard',
+            // ),
+            // observer(() => Visibility(
+            //       visible: store.diagramVisibile,
+            //       child: FretboardDiagramWidget(store: store, size: 500),
+            //     )),
           ],
         ),
       ),

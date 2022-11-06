@@ -31,7 +31,7 @@ class _FretboardDiagramState extends State<FretboardDiagramWidget> {
               onPointerUp: (event) {
                 store.onPointerUp(event.localPosition);
               },
-              child: FretboardWidget(store.currentDiagram, Size(400, 600))
+              child: FretboardWidget(store.currentDiagram, const Size(400, 600))
               // child: CustomPaint(
               //   size: Size(widget.size, widget.size),
               //   painter: store.diagramPainter,

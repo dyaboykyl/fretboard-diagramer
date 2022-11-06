@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 
+// @dataClass
 class LinePainter extends CustomPainter {
   final Offset start;
   final Offset end;
-  final Color color;
+  final Paint painter;
 
-  LinePainter(this.start, this.end, {this.color = Colors.black});
+  LinePainter(
+    this.start,
+    this.end, {
+    color = Colors.black,
+    width = 0,
+    strokeAlign = StrokeAlign.center,
+  }) : painter = Paint()
+          ..color = color
+          ..strokeWidth = width
+          // ..strokeJoin = StrokeJoin.
+          ..style = PaintingStyle.stroke;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
-    canvas.drawLine(start.scale(size.width, size.height), end.scale(size.width, size.height), paint);
+    canvas.drawLine(start.scale(size.width, size.height), end.scale(size.width, size.height), painter);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+  bool shouldRepaint(LinePainter oldDelegate) {
+    return true;
   }
 }
