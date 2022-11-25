@@ -21,6 +21,9 @@ jobs:
 
       - name: 📦 Get packages
         run: flutter pub get
+        
+      - name: Generate code
+        run: flutter packages pub run build_runner build
 
       - name: 🏭 Build Web Application
         run: flutter build web --release --no-sound-null-safety
