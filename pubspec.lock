@@ -165,9 +165,11 @@ packages:
   data_class_annotation_generator:
     dependency: "direct dev"
     description:
-      path: "../data_class_null_safe/data_class_annotation_generator"
-      relative: true
-    source: path
+      path: data_class_annotation_generator
+      ref: HEAD
+      resolved-ref: e797b5a80be7a90116b756c0ecf0b9bafef3c817
+      url: "https://github.com/dyaboykyl/data_class_null_safe"
+    source: git
     version: "0.1.9"
   fake_async:
     dependency: transitive
