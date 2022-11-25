@@ -1,5 +1,5 @@
-import 'package:fretboard_diagramer/models/Key.dart';
 import 'package:data_class_annotation/data_class_annotation.dart';
+import 'package:fretboard_diagramer/models/key.dart';
 import 'package:fretboard_diagramer/models/time_signature.dart';
 
 part 'melody.g.dart';
@@ -59,9 +59,9 @@ class Measure {
 class Melody {
   final TimeSignature timeSignature;
   late final List<Measure> measures;
-  final Key? key;
+  final Key key;
 
-  Melody({required this.measures, required this.timeSignature, this.key});
+  Melody({required this.measures, required this.timeSignature, this.key = Key.none});
 
   Melody.empty() : this(measures: [], timeSignature: TimeSignature.fourFour());
 

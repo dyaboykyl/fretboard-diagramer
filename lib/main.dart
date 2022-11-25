@@ -3,7 +3,12 @@ import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/melody.dart';
 import 'package:fretboard_diagramer/stores/diagramer_store.dart';
 import 'package:fretboard_diagramer/view/staff/staff_widget.dart';
-import 'package:fretboard_diagramer/view/staff/staff_widget_store.dart';
+import 'package:fretboard_diagramer/view/staff/staff_widget_store.dart'; // Amplify Flutter Packages
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+
+// Generated in previous step
+import 'amplifyconfiguration.dart';
 
 final log = logger('Main');
 
@@ -56,6 +61,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final store = DiagramerStore();
+
+  @override
+  void initState() {
+    super.initState();
+    _configureAmplify();
+  }
+
+  Future<void> _configureAmplify() async {
+    // Add any Amplify plugins you want to use
+    final authPlugin = AmplifyAuthCognito();
+    await Amplify.addPlugin(authPlugin);
+
+    // You can use addPlugins if you are going to be adding multiple plugins
+    // await Amplify.addPlugins([authPlugin, analyticsPlugin]);
+
+    // Once Plugins are added, configure Amplify
+    // Note: Amplify can only be configured once.
+    try {
+      await Amplify.configure(amplifyconfig);
+    } on AmplifyAlreadyConfiguredException {
+      safePrint("Tried to reconfigure Amplify; this can occur when your app restarts on Android.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
