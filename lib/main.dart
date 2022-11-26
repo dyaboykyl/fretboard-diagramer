@@ -1,13 +1,12 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/melody.dart';
 import 'package:fretboard_diagramer/stores/diagramer_store.dart';
 import 'package:fretboard_diagramer/view/staff/staff_widget.dart';
 import 'package:fretboard_diagramer/view/staff/staff_widget_store.dart'; // Amplify Flutter Packages
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 
-// Generated in previous step
 import 'amplifyconfiguration.dart';
 
 final log = logger('Main');

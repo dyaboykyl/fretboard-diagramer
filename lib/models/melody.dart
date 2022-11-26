@@ -51,7 +51,7 @@ class Measure {
   Measure({required this.components});
 
   bool isFull(int beats) {
-    return components.fold(0.0, (totalDuration, element) => totalDuration + element.duration) == beats;
+    return components.fold(0.0, (totalDuration, element) => (totalDuration as double) + element.duration) == beats;
   }
 }
 
