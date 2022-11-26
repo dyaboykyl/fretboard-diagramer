@@ -127,6 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 Note(duration: 4, value: 66),
                 Note(duration: 2, value: 67),
                 Note(duration: 2, value: 65),
+                Note(duration: 1, value: 63),
+                Note(duration: 2, value: 70),
+                Note(duration: 1, value: 68),
               ]),
             )),
             // const Text(

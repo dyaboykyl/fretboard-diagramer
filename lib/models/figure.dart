@@ -1,7 +1,7 @@
 import 'package:data_class_annotation/data_class_annotation.dart';
-import 'package:fretboard_diagramer/models/figure_step.dart';
 import 'package:fretboard_diagramer/models/measure.dart';
 import 'package:fretboard_diagramer/models/note.dart';
+import 'package:fretboard_diagramer/models/note_group.dart';
 
 part 'figure.g.dart';
 
@@ -14,15 +14,19 @@ class Figure {
   static Figure fromNotes(List<Note> notes) {
     final List<Measure> measures = [];
 
-    List<FigureStep> currentMeasure = [];
+    List<NoteGroup> currentMeasure = [];
     double currentBeat = 1;
     for (var note in notes) {
-      currentMeasure.add(FigureStep(notes: [note]));
+      currentMeasure.add(NoteGroup(
+        notes: [note],
+        beat: currentBeat.floor(),
+        measure: measures.length,
+      ));
       currentBeat += note.duration;
       if (currentBeat > 4) {
         // TODO: Time signature
         currentBeat = 1;
-        measures.add(Measure(steps: currentMeasure));
+        measures.add(Measure(measureNumber: measures.length, noteGroups: currentMeasure));
         currentMeasure = [];
       }
     }

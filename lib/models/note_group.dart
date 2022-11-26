@@ -1,13 +1,19 @@
 import 'package:data_class_annotation/data_class_annotation.dart';
 import 'package:fretboard_diagramer/models/note.dart';
 
-part 'figure_step.g.dart';
+part 'note_group.g.dart';
 
 @dataClass
-class FigureStep {
+class NoteGroup {
   final List<Note> notes;
+  final int beat;
+  final int measure;
 
-  FigureStep({required this.notes});
+  NoteGroup({
+    required this.notes,
+    required this.measure,
+    required this.beat,
+  });
 
   @override
   int get hashCode => dataHashCode;

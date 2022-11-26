@@ -4,8 +4,10 @@ import 'package:data_class_annotation/data_class_annotation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
 import 'package:fretboard_diagramer/models/figure.dart';
+import 'package:fretboard_diagramer/models/measure.dart';
 import 'package:fretboard_diagramer/models/note.dart';
 import 'package:fretboard_diagramer/view/models/vector.dart';
+import 'package:fretboard_diagramer/view/staff/models.dart';
 
 part 'positioning.g.dart';
 
@@ -13,65 +15,6 @@ final log = logger('StaffPositioning');
 
 const maxMeasureWidth = .5;
 const minMeasureWidth = .2;
-
-enum StemDirection { none, up, down }
-
-@dataClass
-class NoteGroup {
-  final List<Note> notes;
-  final int beat;
-  final int measure;
-
-  NoteGroup({required this.notes, required this.measure, required this.beat});
-
-  StemDirection get stemDirection {
-    if (!notes.any((n) => n.duration < 1 && n.duration > 0)) {
-      return StemDirection.none;
-    }
-
-    final noteHeightSum = notes.map((n) => n.height).sum;
-    if (noteHeightSum > 0) {
-      return StemDirection.up;
-    } else {
-      return StemDirection.down;
-    }
-  }
-
-  @override
-  String toString() => dataToString();
-}
-
-@dataClass
-class NotePosition {
-  final Note note;
-  final Offset head;
-  Vector stem = Vector.horizontal(xStart: 0, xEnd: 0);
-
-  NotePosition({required this.note, required this.head, required Vector stem}) : stem = stem;
-
-  PaintingStyle get headStyle {
-    // TODO: time signatures
-    if (note.duration > 1) {
-      return PaintingStyle.stroke;
-    }
-
-    return PaintingStyle.fill;
-  }
-
-  @override
-  String toString() => dataToString();
-}
-
-// connected by a beam
-@dataClass
-class NoteGroupPosition {
-  final List<NotePosition> notePositions;
-
-  NoteGroupPosition(this.notePositions);
-
-  @override
-  String toString() => dataToString();
-}
 
 @dataClass
 class StaffPainterPositioning {
@@ -90,12 +33,13 @@ class StaffPainterPositioning {
   late final staffBottom = staffTop + staffHeight;
   late final staffNoteHeightSpacing = staffHeight / (lineCount - 1);
 
-  late final measureWidth = staffHeight * 3; // TODO: calculate measure lengths dynamically
-  late final staffMeasuresWidth = figure.measures.length * measureWidth;
+  // late final measureWidth = staffHeight * 3; // TODO: calculate measure lengths dynamically
+  // late final staffMeasuresWidth = .85 * size.width;
+  late final actualStaffMeasuresWidth = measurePositions.map((m) => m.width).sum;
   late final staffIntroWidth = staffHeight * 1.5;
-  late final staffWidth = staffIntroWidth + staffMeasuresWidth;
+  late final staffWidth = staffIntroWidth + actualStaffMeasuresWidth;
 
-  late final staffStart = size.width / 2 - staffMeasuresWidth / 2 - staffIntroWidth;
+  late final staffStart = 0.0; // size.width / 2 - staffMeasuresWidth / 2 - staffIntroWidth;
   late final staffEnd = staffWidth + staffStart;
 
   late final staffIntroComponentWidth = staffIntroWidth / 3;
@@ -105,11 +49,10 @@ class StaffPainterPositioning {
   late final keyX = clefX + staffIntroComponentWidth;
   late final timeSignatureX = keyX + staffIntroComponentWidth;
 
-  late final measureStartX = staffStart + staffIntroWidth;
-  late final measureLines = figure.measures.mapIndexed((i, m) {
-    final x = measureStartX + measureWidth * (i + 1);
-    return Vector.vertical(yStart: staffBottom, yEnd: staffTop, x: x);
-  });
+  late final firstMeasureStartX = staffStart + staffIntroWidth;
+  late final measureLines = measurePositions.map(
+    (e) => Vector.vertical(yStart: staffBottom, yEnd: staffTop, x: e.endX),
+  );
   late final finalMeasureLine = Vector.vertical(
     yStart: staffTop - (horizontalLineWidth / 2),
     yEnd: staffBottom + (horizontalLineWidth / 2),
@@ -118,78 +61,66 @@ class StaffPainterPositioning {
 
   late final firstNoteX = noteSize.width;
   late final noteAngle = -pi / 10;
-  late final availableMeasureSpace = measureWidth - firstNoteX * 2;
+  // late final availableMeasureSpace = measureWidth - firstNoteX * 2;
   late final noteHeight = staffNoteHeightSpacing * .85;
   late final noteSize = Size(noteHeight * 1.5, noteHeight);
-  late final minGroupWidth = availableMeasureSpace / 4; // TODO: time signature
-  late final minNoteSpaceWidth = noteSize.width * 2;
+  // late final minGroupWidth = availableMeasureSpace / 4; // TODO: time signature
+  late final minNoteSpaceWidth = noteSize.width * 1.25;
 
   late final horizontalLines = List.generate(
     lineCount.toInt(),
     (line) => Vector.horizontal(xStart: staffStart, xEnd: staffEnd, y: staffTop + (line * staffNoteHeightSpacing)),
   );
-  late final noteGroupPositions = createNoteGroupPositions();
+  late final measurePositions = createMeasurePositions();
 
   double getNoteY(Note note) {
     return yMid - (note.value - Note.middleStaffNote) * staffNoteHeightSpacing / 2;
   }
 
-  List<NoteGroupPosition> createNoteGroupPositions() {
-    return figure.measures
-        .mapIndexed((measureCount, measure) {
-          final List<NoteGroup> noteGroups = [];
-          int currentBeat = 1;
-          for (var step in measure.steps) {
-            log.d("Processing measure=$measureCount, currentBeat=$currentBeat");
-            if (currentBeat > 4) {
-              log.e('More than 4 beats in measure');
-            }
+  List<MeasurePosition> createMeasurePositions() {
+    log.d("Creating positions for ${figure.measures}");
+    List<MeasurePosition> measurePositions = [];
 
-            // TODO: handle multiple notes in step
-            for (var note in step.notes) {
-              // TODO: handle other time signatures
-              if (note.duration >= 1) {
-                final noteGroup = NoteGroup(notes: [note], measure: measureCount, beat: currentBeat);
-                noteGroups.add(noteGroup);
-              }
-              // TODO: handle cross beat notes
-              currentBeat = (currentBeat + note.duration).floor();
-              break;
-            }
-          }
-          log.d("Created $noteGroups");
+    figure.measures.forEachIndexed((index, measure) {
+      measurePositions.add(createMeasurePosition(measure, index == 0 ? null : measurePositions[index - 1]));
+    });
 
-          double noteX = measureStartX + firstNoteX;
-          int currentMeasure = 0;
-          return noteGroups.map((group) {
-            if (group.measure > currentMeasure) {
-              currentMeasure = group.measure;
-              noteX = measureStartX + firstNoteX + currentMeasure * measureWidth;
-            }
-            // double groupWidth = min(minGroupWidth, group.notes.length * minNoteSpaceWidth);
+    return measurePositions;
+  }
 
-            final notePositions = group.notes.map((note) {
-              final head = Offset(noteX, getNoteY(note));
-              noteX += minNoteSpaceWidth;
+  MeasurePosition createMeasurePosition(Measure measure, MeasurePosition? previous) {
+    double measureStartX = previous == null ? firstMeasureStartX : previous.endX;
+    double noteX = measureStartX + firstNoteX;
 
-              // TODO: time signature
-              Vector? stem;
-              if (group.stemDirection != StemDirection.none) {
-                final stemMultiplier = group.stemDirection == StemDirection.down ? 1 : -1;
-                stem = Vector.vertical(yStart: head.dy, yEnd: head.dy + (staffHeight * stemMultiplier));
-              }
+    final List<NoteGroupPosition> groupPositions = measure.noteGroups.mapIndexed((stepNumber, step) {
+      // double groupWidth = min(minGroupWidth, group.notes.length * minNoteSpaceWidth);
 
-              // TODO: beams/flags
+      final notePositions = step.notes.map((note) {
+        final minX = stepNumber == 0 ? noteX : measureStartX + firstNoteX + (step.beat - 1) * noteSize.width * 1.5;
+        if (noteX < minX) {
+          noteX = minX;
+        }
+        final head = Offset(noteX, getNoteY(note));
+        noteX += minNoteSpaceWidth;
 
-              return NotePosition(note: note, head: head, stem: stem ?? Vector.zero);
-            }).toList();
+        // TODO: time signature
+        Vector? stem;
+        if (step.stemDirection != StemDirection.none) {
+          final stemMultiplier = step.stemDirection == StemDirection.down ? 1 : -1;
+          stem = Vector.vertical(yStart: head.dy, yEnd: head.dy + (staffHeight * stemMultiplier));
+        }
 
-            return NoteGroupPosition(notePositions);
-            // noteGroup.notePositions.add(value)
-          });
-        })
-        .flattened
-        .toList();
+        // TODO: beams/flags
+
+        return NotePosition(note: note, head: head, stem: stem ?? Vector.zero);
+      }).toList();
+
+      return NoteGroupPosition(notePositions);
+      // noteGroup.notePositions.add(value)
+    }).toList();
+
+    final width = noteX - measureStartX + minNoteSpaceWidth;
+    return MeasurePosition(width: width, startX: measureStartX, groupPositions: groupPositions);
   }
 
   // Style

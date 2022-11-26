@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
+import 'package:fretboard_diagramer/view/staff/models.dart';
 import 'package:fretboard_diagramer/view/staff/positioning.dart';
 import 'package:touchable/touchable.dart';
 
@@ -111,10 +110,12 @@ class StaffPainter extends CustomPainter {
   }
 
   _drawFigure() {
-    log.i("Drawing ${positioning.noteGroupPositions}");
-    for (var noteGroup in positioning.noteGroupPositions) {
-      for (var notePosition in noteGroup.notePositions) {
-        _drawNote(notePosition);
+    log.i("Drawing ${positioning.measurePositions}");
+    for (var measurePosition in positioning.measurePositions) {
+      for (var noteGroup in measurePosition.groupPositions) {
+        for (var notePosition in noteGroup.notePositions) {
+          _drawNote(notePosition);
+        }
       }
     }
   }

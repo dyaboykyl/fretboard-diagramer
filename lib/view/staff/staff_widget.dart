@@ -16,7 +16,7 @@ class StaffWidget extends StatelessWidget {
       store.melody;
       return CanvasTouchDetector(
         builder: (context) => CustomPaint(
-          painter: StaffPainter(context, StaffPainterPositioning(figure: store.figure!, size: store.size)),
+          painter: StaffPainter(context, StaffPainterPositioning(figure: store.figure, size: store.size)),
           size: store.size,
         ),
         gesturesToOverride: const [GestureType.onTapDown, GestureType.onHover],
