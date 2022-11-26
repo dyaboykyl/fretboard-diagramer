@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fretboard_diagramer/models/fretboard.dart';
+import 'package:fretboard_diagramer/models/music//fretboard.dart';
 
 class FretboardPainter extends CustomPainter {
   final Fretboard fretboard;

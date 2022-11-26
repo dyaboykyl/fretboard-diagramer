@@ -1,5 +1,5 @@
-import 'package:fretboard_diagramer/models/fret_position.dart';
-import 'package:fretboard_diagramer/models/scale_value.dart';
+import 'fret_position.dart';
+import 'scale_value.dart';
 
 class Fretboard {
   final int fretCount;

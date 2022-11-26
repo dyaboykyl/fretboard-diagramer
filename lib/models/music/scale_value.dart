@@ -1,4 +1,4 @@
-import 'package:fretboard_diagramer/models/chord.dart';
+import 'chord.dart';
 
 enum ScaleValue {
   none,

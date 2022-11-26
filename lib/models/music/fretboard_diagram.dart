@@ -1,8 +1,7 @@
-import 'package:fretboard_diagramer/models/chord.dart';
-import 'package:fretboard_diagramer/models/fret_position.dart';
-import 'package:fretboard_diagramer/models/note_marking.dart';
-
+import 'chord.dart';
+import 'fret_position.dart';
 import 'fretboard.dart';
+import 'note_marking.dart';
 
 class FretboardDiagram {
   final String? titleOverride;

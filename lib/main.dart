@@ -2,7 +2,8 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
-import 'package:fretboard_diagramer/models/melody.dart';
+import 'package:fretboard_diagramer/models/figure.dart';
+import 'package:fretboard_diagramer/models/note.dart';
 import 'package:fretboard_diagramer/stores/diagramer_store.dart';
 import 'package:fretboard_diagramer/view/staff/staff_widget.dart';
 import 'package:fretboard_diagramer/view/staff/staff_widget_store.dart'; // Amplify Flutter Packages
@@ -64,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _configureAmplify();
+    // _configureAmplify();
   }
 
   Future<void> _configureAmplify() async {
@@ -119,8 +120,14 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             StaffWidget(StaffWidgetStore(
-              const Size(600, 200),
-              Melody.empty().add(Note(value: 60, duration: 4)),
+              const Size(800, 200),
+              // null,
+              // Melody.empty().add(Note(value: 60, duration: 4)),
+              Figure.fromNotes([
+                Note(duration: 4, value: 66),
+                Note(duration: 2, value: 67),
+                Note(duration: 2, value: 65),
+              ]),
             )),
             // const Text(
             //   'New fretboard',

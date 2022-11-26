@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/logging/logging.dart';
-import 'package:fretboard_diagramer/models/fret_position.dart';
-import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
-import 'package:fretboard_diagramer/models/melody.dart';
-import 'package:fretboard_diagramer/models/scale_value.dart';
+import 'package:fretboard_diagramer/models/music//fret_position.dart';
+import 'package:fretboard_diagramer/models/music//fretboard_diagram.dart';
+import 'package:fretboard_diagramer/models/music//scale_value.dart';
+import 'package:fretboard_diagramer/models/note.dart';
 import 'package:fretboard_diagramer/view/diagram/diagram_view_options.dart';
 import 'package:fretboard_diagramer/view/painter/models/fretboard_image.dart';
 import 'package:fretboard_diagramer/view/painter/painter.dart';

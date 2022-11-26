@@ -1,8 +1,9 @@
-import 'package:fretboard_diagramer/models/scale_value.dart';
+import 'scale_value.dart';
 
 class Chord {
   final ScaleValue root;
   final List<ScaleValue> notes;
+  String a = "";
 
   Chord(this.root, this.notes);
 

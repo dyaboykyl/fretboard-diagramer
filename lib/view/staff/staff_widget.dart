@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fretboard_diagramer/utils.dart';
+import 'package:fretboard_diagramer/view/staff/positioning.dart';
 import 'package:fretboard_diagramer/view/staff/staff_painter.dart';
 import 'package:fretboard_diagramer/view/staff/staff_widget_store.dart';
 import 'package:touchable/touchable.dart';
@@ -15,7 +16,7 @@ class StaffWidget extends StatelessWidget {
       store.melody;
       return CanvasTouchDetector(
         builder: (context) => CustomPaint(
-          painter: StaffPainter(context, store),
+          painter: StaffPainter(context, StaffPainterPositioning(figure: store.figure!, size: store.size)),
           size: store.size,
         ),
         gesturesToOverride: const [GestureType.onTapDown, GestureType.onHover],

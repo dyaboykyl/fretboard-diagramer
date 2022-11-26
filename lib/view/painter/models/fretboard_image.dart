@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
+import 'package:fretboard_diagramer/models/music//fretboard_diagram.dart';
 import 'package:fretboard_diagramer/view/painter/models/base_models.dart';
 
 const stringCount = 6;

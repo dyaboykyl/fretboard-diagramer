@@ -1,6 +1,8 @@
 import 'package:data_class_annotation/data_class_annotation.dart';
-import 'package:fretboard_diagramer/models/key.dart';
-import 'package:fretboard_diagramer/models/time_signature.dart';
+import 'package:fretboard_diagramer/models/note.dart';
+
+import 'key.dart';
+import 'time_signature.dart';
 
 part 'melody.g.dart';
 
@@ -26,27 +28,8 @@ class Rest extends MelodyComponent {
 }
 
 @dataClass
-class Note extends MelodyComponent {
-  // middle C = 60, 0 = rest
-  final int value;
-  @override
-  final double duration;
-
-  Note({required this.value, required this.duration});
-
-  @override
-  int get hashCode => dataHashCode;
-
-  @override
-  bool operator ==(other) => dataEquals(other);
-
-  @override
-  String toString() => dataToString();
-}
-
-@dataClass
 class Measure {
-  late final List<MelodyComponent> components;
+  late final List<Note> components;
 
   Measure({required this.components});
 
@@ -65,7 +48,7 @@ class Melody {
 
   Melody.empty() : this(measures: [], timeSignature: TimeSignature.fourFour());
 
-  Melody add(MelodyComponent melodyComponent, [Measure? measure]) {
+  Melody add(Note melodyComponent, [Measure? measure]) {
     var newMeasures = measures.toList();
     // first note
     if (measures.isEmpty) {

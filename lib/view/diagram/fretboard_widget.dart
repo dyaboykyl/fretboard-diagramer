@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fretboard_diagramer/models/fretboard_diagram.dart';
+import 'package:fretboard_diagramer/models/music//fretboard_diagram.dart';
 import 'package:fretboard_diagramer/view/painter/line_painter.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 
