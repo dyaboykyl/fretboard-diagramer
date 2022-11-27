@@ -11,9 +11,13 @@ class Vector {
 
   Vector({required this.start, required this.end});
 
-  Vector.horizontal({required double xStart, required double xEnd, double y = 0}) : this(start: Offset(xStart, y), end: Offset(xEnd, y));
+  Vector.horizontal({required double xStart, required double xEnd, double y = 0})
+      : this(start: Offset(xStart, y), end: Offset(xEnd, y));
 
-  Vector.vertical({required double yStart, required double yEnd, double x = 0}) : this(start: Offset(x, yStart), end: Offset(x, yEnd));
+  Vector.vertical({required double yStart, required double yEnd, double x = 0})
+      : this(start: Offset(x, yStart), end: Offset(x, yEnd));
+
+  double get height => (end.dy - start.dy).abs();
 
   @override
   String toString() => dataToString();

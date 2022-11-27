@@ -10,10 +10,10 @@ class NoteGroup {
   final int measure;
 
   NoteGroup({
-    required this.notes,
+    required List<Note> notes,
     required this.measure,
     required this.beat,
-  });
+  }) : notes = notes.sorted((a, b) => a.height.compareTo(b.height));
 
   @override
   int get hashCode => dataHashCode;

@@ -40,9 +40,20 @@ class NoteGroupPosition {
   String toString() => dataToString();
 }
 
+// connected by a beam
+@dataClass
+class BeamGroupPosition {
+  final List<NoteGroupPosition> noteGroupPositions;
+
+  BeamGroupPosition(this.noteGroupPositions);
+
+  @override
+  String toString() => dataToString();
+}
+
 @dataClass
 class MeasurePosition {
-  final List<NoteGroupPosition> groupPositions;
+  final List<BeamGroupPosition> beamGroups;
   final double width;
   final double startX;
   double get endX => width + startX;
@@ -51,7 +62,7 @@ class MeasurePosition {
   MeasurePosition({
     required this.width,
     required this.startX,
-    required this.groupPositions,
+    required this.beamGroups,
   });
 
   @override
@@ -60,12 +71,28 @@ class MeasurePosition {
 
 extension NoteGroupExt on NoteGroup {
   StemDirection get stemDirection {
-    if (!notes.any((n) => n.duration < 4 && n.duration > 0)) {
+    if (!notes.any((n) => n.hasStem)) {
       return StemDirection.none;
     }
 
     final noteHeightSum = notes.map((n) => n.height).sum;
     if (noteHeightSum > 0) {
+      return StemDirection.down;
+    } else {
+      return StemDirection.up;
+    }
+  }
+}
+
+extension NoteExt on Note {
+  bool get hasStem => duration < 4 && duration > 0;
+
+  StemDirection get stemDirection {
+    if (!hasStem) {
+      return StemDirection.none;
+    }
+
+    if (height > 0) {
       return StemDirection.down;
     } else {
       return StemDirection.up;

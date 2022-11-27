@@ -76,7 +76,9 @@ class StaffPainter extends CustomPainter {
   _drawClef() {
     canvas.drawRect(
       Rect.fromCenter(
-          center: Offset(positioning.clefX, positioning.yMid), width: positioning.staffIntroComponentWidth, height: positioning.staffHeight * .9),
+          center: Offset(positioning.clefX, positioning.yMid),
+          width: positioning.staffIntroComponentWidth,
+          height: positioning.staffHeight * .9),
       clefPaint,
     );
   }
@@ -84,7 +86,9 @@ class StaffPainter extends CustomPainter {
   _drawKeySignature() {
     canvas.drawRect(
       Rect.fromCenter(
-          center: Offset(positioning.keyX, positioning.yMid), width: positioning.staffIntroComponentWidth, height: positioning.staffHeight * .9),
+          center: Offset(positioning.keyX, positioning.yMid),
+          width: positioning.staffIntroComponentWidth,
+          height: positioning.staffHeight * .9),
       keySignaturePaint,
     );
   }
@@ -112,9 +116,11 @@ class StaffPainter extends CustomPainter {
   _drawFigure() {
     log.i("Drawing ${positioning.measurePositions}");
     for (var measurePosition in positioning.measurePositions) {
-      for (var noteGroup in measurePosition.groupPositions) {
-        for (var notePosition in noteGroup.notePositions) {
-          _drawNote(notePosition);
+      for (var beamGroup in measurePosition.beamGroups) {
+        for (var noteGroup in beamGroup.noteGroupPositions) {
+          for (var notePosition in noteGroup.notePositions) {
+            _drawNote(notePosition);
+          }
         }
       }
     }
