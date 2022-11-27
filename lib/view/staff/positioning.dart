@@ -28,18 +28,16 @@ class StaffPainterPositioning {
   String toString() => dataToString();
 
   late final yMid = size.height / 2;
-  late final staffHeight = size.height / 3;
+  late final staffHeight = size.height / 2;
   late final staffTop = yMid - staffHeight / 2;
   late final staffBottom = staffTop + staffHeight;
   late final staffNoteHeightSpacing = staffHeight / (lineCount - 1);
 
-  // late final measureWidth = staffHeight * 3; // TODO: calculate measure lengths dynamically
-  // late final staffMeasuresWidth = .85 * size.width;
   late final actualStaffMeasuresWidth = measurePositions.map((m) => m.width).sum;
-  late final staffIntroWidth = staffHeight * 1.5;
+  late final staffIntroWidth = staffHeight * 2;
   late final staffWidth = staffIntroWidth + actualStaffMeasuresWidth;
 
-  late final staffStart = 0.0; // size.width / 2 - staffMeasuresWidth / 2 - staffIntroWidth;
+  late final staffStart = 0.0; // TODO: position staff in center
   late final staffEnd = staffWidth + staffStart;
 
   late final staffIntroComponentWidth = staffIntroWidth / 3;
@@ -105,14 +103,21 @@ class StaffPainterPositioning {
 
         // TODO: time signature
         Vector? stem;
-        if (step.stemDirection != StemDirection.none) {
+        final stemDirection = step.stemDirection;
+        if (stemDirection != StemDirection.none) {
           final stemMultiplier = step.stemDirection == StemDirection.down ? 1 : -1;
-          stem = Vector.vertical(yStart: head.dy, yEnd: head.dy + (staffHeight * stemMultiplier));
+          const yOffset = .985;
+          final yStart = stemDirection == StemDirection.up ? head.dy * yOffset : head.dy / yOffset;
+          stem = Vector.vertical(
+            yStart: yStart,
+            yEnd: yStart + (staffHeight * .75 * stemMultiplier),
+            x: head.dx - (noteSize.width / 2 * stemMultiplier) + (noteStrokeWidth / 4 * stemMultiplier),
+          );
         }
 
         // TODO: beams/flags
 
-        return NotePosition(note: note, head: head, stem: stem ?? Vector.zero);
+        return NotePosition(note: note, head: head, stem: stem);
       }).toList();
 
       return NoteGroupPosition(notePositions);
@@ -124,7 +129,7 @@ class StaffPainterPositioning {
   }
 
   // Style
-  late final horizontalLineWidth = .02 * staffHeight;
+  late final horizontalLineWidth = .025 * staffHeight;
   late final endLineWidth = 4 * horizontalLineWidth;
-  late final noteStrokeWidth = horizontalLineWidth;
+  late final noteStrokeWidth = horizontalLineWidth * 1.5;
 }

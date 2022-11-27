@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             StaffWidget(StaffWidgetStore(
-              const Size(800, 200),
+              const Size(800, 80),
               // null,
               // Melody.empty().add(Note(value: 60, duration: 4)),
               Figure.fromNotes([

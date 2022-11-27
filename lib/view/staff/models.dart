@@ -12,9 +12,9 @@ enum StemDirection { none, up, down }
 class NotePosition {
   final Note note;
   final Offset head;
-  Vector stem = Vector.horizontal(xStart: 0, xEnd: 0);
+  Vector? stem;
 
-  NotePosition({required this.note, required this.head, required Vector stem}) : stem = stem;
+  NotePosition({required this.note, required this.head, this.stem});
 
   PaintingStyle get headStyle {
     // TODO: time signatures
@@ -60,15 +60,15 @@ class MeasurePosition {
 
 extension NoteGroupExt on NoteGroup {
   StemDirection get stemDirection {
-    if (!notes.any((n) => n.duration < 1 && n.duration > 0)) {
+    if (!notes.any((n) => n.duration < 4 && n.duration > 0)) {
       return StemDirection.none;
     }
 
     final noteHeightSum = notes.map((n) => n.height).sum;
     if (noteHeightSum > 0) {
-      return StemDirection.up;
-    } else {
       return StemDirection.down;
+    } else {
+      return StemDirection.up;
     }
   }
 }

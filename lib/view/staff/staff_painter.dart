@@ -121,10 +121,25 @@ class StaffPainter extends CustomPainter {
   }
 
   _drawNote(NotePosition notePosition) {
-    notePaint.style = notePosition.headStyle;
+    _drawNoteHead(notePosition.head, PaintingStyle.stroke);
+    if (notePosition.headStyle != PaintingStyle.stroke) {
+      _drawNoteHead(notePosition.head, notePosition.headStyle);
+    }
+    _drawStem(notePosition);
+  }
+
+  _drawNoteHead(Offset head, PaintingStyle headStyle) {
+    notePaint.style = headStyle;
     // final center = Offset(not, store.staffBottom);
-    var rect = Rect.fromCenter(center: notePosition.head, width: positioning.noteSize.width, height: positioning.noteSize.height);
-    drawRotated(canvas, notePosition.head, positioning.noteAngle, () => canvas.drawOval(rect, notePaint));
+    var rect = Rect.fromCenter(center: head, width: positioning.noteSize.width, height: positioning.noteSize.height);
+    drawRotated(canvas, head, positioning.noteAngle, () => canvas.drawOval(rect, notePaint));
+  }
+
+  _drawStem(NotePosition notePosition) {
+    linePaint.strokeWidth = positioning.noteStrokeWidth;
+    if (notePosition.stem != null) {
+      canvas.drawLine(notePosition.stem!.start, notePosition.stem!.end, linePaint);
+    }
   }
 
   void drawRotated(
