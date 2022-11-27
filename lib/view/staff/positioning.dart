@@ -59,11 +59,9 @@ class StaffPainterPositioning {
 
   late final firstNoteX = noteSize.width;
   late final noteAngle = -pi / 10;
-  // late final availableMeasureSpace = measureWidth - firstNoteX * 2;
-  late final noteHeight = staffNoteHeightSpacing * .85;
-  late final noteSize = Size(noteHeight * 1.5, noteHeight);
-  // late final minGroupWidth = availableMeasureSpace / 4; // TODO: time signature
-  late final minNoteSpaceWidth = noteSize.width * 1.25;
+  late final noteHeight = staffNoteHeightSpacing * .75;
+  late final noteSize = Size(noteHeight * 1.4, noteHeight);
+  late final minNoteSpaceWidth = noteSize.width * 3;
 
   late final horizontalLines = List.generate(
     lineCount.toInt(),
@@ -111,7 +109,7 @@ class StaffPainterPositioning {
           stem = Vector.vertical(
             yStart: yStart,
             yEnd: yStart + (staffHeight * .75 * stemMultiplier),
-            x: head.dx - (noteSize.width / 2 * stemMultiplier) + (noteStrokeWidth / 4 * stemMultiplier),
+            x: head.dx - (noteSize.width / 2 * stemMultiplier) + (noteStrokeWidth / 10 * stemMultiplier),
           );
         }
 
@@ -124,7 +122,7 @@ class StaffPainterPositioning {
       // noteGroup.notePositions.add(value)
     }).toList();
 
-    final width = noteX - measureStartX + minNoteSpaceWidth;
+    final width = noteX - measureStartX;
     return MeasurePosition(width: width, startX: measureStartX, groupPositions: groupPositions);
   }
 

@@ -13,7 +13,7 @@ class StaffWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return observer(() {
-      store.melody;
+      store.figure;
       return CanvasTouchDetector(
         builder: (context) => CustomPaint(
           painter: StaffPainter(context, StaffPainterPositioning(figure: store.figure, size: store.size)),
