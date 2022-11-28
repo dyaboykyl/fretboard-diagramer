@@ -117,13 +117,18 @@ class StaffPainter extends CustomPainter {
     log.i("Drawing ${positioning.measurePositions}");
     for (var measurePosition in positioning.measurePositions) {
       for (var beamGroup in measurePosition.beamGroups) {
-        for (var noteGroup in beamGroup.noteGroupPositions) {
-          for (var notePosition in noteGroup.notePositions) {
-            _drawNote(notePosition);
-          }
-        }
+        _drawBeamGroup(beamGroup);
       }
     }
+  }
+
+  _drawBeamGroup(BeamGroupPosition beamGroup) {
+    for (var noteGroup in beamGroup.noteGroupPositions) {
+      for (var notePosition in noteGroup.notePositions) {
+        _drawNote(notePosition);
+      }
+    }
+    canvas.drawLine(beamGroup.beam.start, beamGroup.beam.end, linePaint);
   }
 
   _drawNote(NotePosition notePosition) {
@@ -138,7 +143,7 @@ class StaffPainter extends CustomPainter {
     notePaint.style = headStyle;
     // final center = Offset(not, store.staffBottom);
     var rect = Rect.fromCenter(center: head, width: positioning.noteSize.width, height: positioning.noteSize.height);
-    drawRotated(canvas, head, positioning.noteAngle, () => canvas.drawOval(rect, notePaint));
+    drawRotated(canvas, head, noteAngle, () => canvas.drawOval(rect, notePaint));
   }
 
   _drawStem(NotePosition notePosition) {

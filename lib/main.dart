@@ -132,11 +132,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 Note(duration: 1, value: 68),
                 Note(duration: .5, value: 69),
                 Note(duration: .5, value: 68),
-                Note(duration: .5, value: 67),
                 Note(duration: .5, value: 64),
+                Note(duration: .5, value: 60),
                 Note(duration: .5, value: 62),
                 Note(duration: .5, value: 63),
                 Note(duration: .5, value: 61),
+                // Note(duration: 2, value: 66), // TODO: Ties
+                Note(duration: .5, value: 77) // TODO: staff lines in note
               ]),
             )),
             // const Text(

@@ -44,8 +44,10 @@ class NoteGroupPosition {
 @dataClass
 class BeamGroupPosition {
   final List<NoteGroupPosition> noteGroupPositions;
+  final Vector beam;
+  final double xEnd;
 
-  BeamGroupPosition(this.noteGroupPositions);
+  BeamGroupPosition(this.noteGroupPositions, this.beam, this.xEnd);
 
   @override
   String toString() => dataToString();

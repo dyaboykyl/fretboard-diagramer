@@ -17,6 +17,7 @@ final log = logger('StaffPositioning');
 const maxMeasureWidth = .5;
 const minMeasureWidth = .2;
 const stemYstartOffset = .985;
+const noteAngle = -pi / 10;
 
 @dataClass
 class StaffPainterPositioning {
@@ -50,6 +51,19 @@ class StaffPainterPositioning {
   late final timeSignatureX = keyX + staffIntroComponentWidth;
 
   late final firstMeasureStartX = staffStart + staffIntroWidth;
+
+  late final firstNoteX = noteSize.width * 1.5;
+  late final noteHeight = staffNoteHeightSpacing * .75;
+  late final noteSize = Size(noteHeight * 1.4, noteHeight);
+  late final minNoteSpaceWidth = noteSize.width * 2;
+  late final minMeasureWidth = firstNoteX + 3 * minNoteSpaceWidth;
+
+  late final horizontalLines = List.generate(
+    lineCount.toInt(),
+    (line) => Vector.horizontal(xStart: staffStart, xEnd: staffEnd, y: staffTop + (line * staffNoteHeightSpacing)),
+  );
+
+  // measures
   late final measureLines = measurePositions.map(
     (e) => Vector.vertical(yStart: staffBottom, yEnd: staffTop, x: e.endX),
   );
@@ -57,19 +71,6 @@ class StaffPainterPositioning {
     yStart: staffTop - (horizontalLineWidth / 2),
     yEnd: staffBottom + (horizontalLineWidth / 2),
     x: measureLines.last.start.dx,
-  );
-
-  late final firstNoteX = noteSize.width * 1.5;
-  late final noteAngle = -pi / 10;
-  late final noteHeight = staffNoteHeightSpacing * .75;
-  late final noteSize = Size(noteHeight * 1.4, noteHeight);
-  late final minNoteSpaceWidth = noteSize.width * 2;
-  late final minMeasureWidth = firstNoteX + 3 * minNoteSpaceWidth;
-  late final stemYstartOffset = .985;
-
-  late final horizontalLines = List.generate(
-    lineCount.toInt(),
-    (line) => Vector.horizontal(xStart: staffStart, xEnd: staffEnd, y: staffTop + (line * staffNoteHeightSpacing)),
   );
   late final measurePositions = createMeasurePositions();
 
@@ -95,72 +96,112 @@ class StaffPainterPositioning {
     bool first = true;
 
     log.d("Creating measure position for $measure");
-    final beamGroups = measure.noteGroups
+    final groups = measure.noteGroups
         .groupListsBy((noteGroup) {
           if (noteGroup.notes.first.duration > 1) {
             return noteGroup.beat;
           }
           final group = noteGroup.beat.isOdd ? noteGroup.beat : noteGroup.beat - 1; // TODO: odd time signatures
-          log.d("---Group for $noteGroup: $group");
+          // log.d("---Group for $noteGroup: $group");
           return group;
         })
         .entries
-        .sortedBy<num>((element) => element.key)
-        // .map((e) => e.value)
-        .map((entry) {
-          final noteGroups = entry.value;
-          log.d("--BeamGroup $entry");
-          // figure out stem direction, start, and end
-          final totalNotes = noteGroups.map((g) => g.notes).flattened.where((element) => element.hasStem);
-          final averageHeight = totalNotes.isEmpty ? 0 : totalNotes.map((e) => e.height).average;
-          final stemDirection = averageHeight > 0 ? StemDirection.down : StemDirection.up;
-          final changesDirection = groupChangesDirection(noteGroups);
-
-          final stems = totalNotes.map((e) => getStemVector(note: e, stemDirection: stemDirection));
-          final farthestY = stems.isEmpty
-              ? 0
-              : stems
-                  .reduce((maxStem, stem) => (stemDirection == StemDirection.down
-                          ? stem.end.dy > maxStem.end.dy
-                          : stem.end.dy < maxStem.end.dy)
-                      ? stem
-                      : maxStem)
-                  .end
-                  .dy;
-
-          final noteGroupPositions = noteGroups.mapIndexed((stepNumber, noteGroup) {
-            final notePositions = noteGroup.notes.map((note) {
-              final minX = first ? noteX : measureStartX + firstNoteX + (noteGroup.beat - 1) * minNoteSpaceWidth;
-              first = false;
-              if (noteX < minX) {
-                noteX = minX;
-              }
-              final head = Offset(noteX, getNoteY(note));
-              noteX += minNoteSpaceWidth;
-
-              // TODO: time signature
-              Vector? stem;
-              if (note.hasStem) {
-                final stemMultiplier = stemDirection == StemDirection.down ? 1 : -1;
-                final stemX = head.dx - (noteSize.width / 2 * stemMultiplier) + (noteStrokeWidth / 10 * stemMultiplier);
-                stem = getStemVector(note: note, stemDirection: stemDirection, x: stemX);
-                if (stem.end.dy.compareTo(farthestY) != 0 && changesDirection) {
-                  stem = Vector.vertical(yStart: stem.start.dy, yEnd: farthestY.toDouble(), x: stem.start.dx);
-                }
-              }
-
-              // TODO: beams/flags
-
-              return NotePosition(note: note, head: head, stem: stem);
-            }).toList();
-
-            return NoteGroupPosition(notePositions);
-          }).toList();
-          return BeamGroupPosition(noteGroupPositions);
-        })
-        .toList();
-    final width = max(minMeasureWidth, noteX - measureStartX); //- minNoteSpaceWidth / 2;
+        .sortedBy<num>((element) => element.key);
+    final List<BeamGroupPosition> beamGroups = [];
+    groups.forEachIndexed((index, group) {
+      beamGroups.add(createBeamGroup(
+        measureStartX: measureStartX,
+        noteX: index == 0 ? noteX : beamGroups[index - 1].xEnd,
+        groupNumber: group.key,
+        noteGroups: group.value,
+      ));
+    });
+    final width = max(minMeasureWidth, beamGroups.last.xEnd - measureStartX); //- minNoteSpaceWidth / 2;
     return MeasurePosition(width: width, startX: measureStartX, beamGroups: beamGroups);
+  }
+
+  BeamGroupPosition createBeamGroup({
+    required double measureStartX,
+    required double noteX,
+    required int groupNumber,
+    required List<NoteGroup> noteGroups,
+  }) {
+    // final noteGroups = entry.value;
+    log.d("  BeamGroup $groupNumber: $noteGroups");
+    // figure out stem direction, start, and end
+    final totalNotes = noteGroups.map((g) => g.notes).flattened.where((element) => element.hasStem);
+    final averageHeight =
+        totalNotes.isEmpty ? 0 : totalNotes.map((e) => pow(e.height - Note.middleStaffNote, 2)).average;
+    final stemDirection = averageHeight > 0 ? StemDirection.down : StemDirection.up;
+    final changesDirection = groupChangesDirection(noteGroups);
+
+    final stems = totalNotes.map((e) => getStemVector(note: e, stemDirection: stemDirection)).toList();
+    final farthestY = stems.isEmpty
+        ? 0
+        : stems
+            .reduce((maxStem, stem) =>
+                (stemDirection == StemDirection.down ? stem.end.dy > maxStem.end.dy : stem.end.dy < maxStem.end.dy)
+                    ? stem
+                    : maxStem)
+            .end
+            .dy;
+
+    final noteGroupPositions = noteGroups.mapIndexed((stepNumber, noteGroup) {
+      log.d("   Processing $stepNumber");
+      final notePositions = noteGroup.notes.map((note) {
+        log.d("    $note");
+        final minX = groupNumber == 1 ? noteX : measureStartX + firstNoteX + (noteGroup.beat - 1) * minNoteSpaceWidth;
+        // first = false;
+        if (noteX < minX) {
+          noteX = minX;
+        }
+        final head = Offset(noteX, getNoteY(note));
+        noteX += minNoteSpaceWidth;
+
+        // TODO: time signature
+        Vector? stem;
+        if (note.hasStem) {
+          final stemMultiplier = stemDirection == StemDirection.down ? 1 : -1;
+          final stemX = head.dx - (noteSize.width / 2 * stemMultiplier) + (noteStrokeWidth / 10 * stemMultiplier);
+          stem = getStemVector(note: note, stemDirection: stemDirection, x: stemX);
+          // stem = getStemVector(note: note, stemDirection: stemDirection, x: stemX);
+          if (stem.end.dy.compareTo(farthestY) != 0 && changesDirection) {
+            // TODO: check if within beam slope
+            stem = Vector.vertical(yStart: stem.start.dy, yEnd: farthestY.toDouble(), x: stem.start.dx);
+          }
+        }
+
+        // TODO: beams/flags
+
+        return NotePosition(note: note, head: head, stem: stem);
+      }).toList();
+
+      return NoteGroupPosition(notePositions);
+    }).toList();
+
+    // TODO: multiple notes in note group
+    final beamStart = noteGroupPositions.first.notePositions.first.stem?.end ?? Offset.zero;
+    final beamEnd = noteGroupPositions.last.notePositions.first.stem?.end ?? Offset.zero;
+    final stemCorrectedNoteGroupPositions = noteGroupPositions.map((noteGroupPosition) {
+      return NoteGroupPosition(noteGroupPosition.notePositions.map((notePosition) {
+        if (notePosition.note.hasStem && stems.length > 2) {
+          var stem = getStemVectorForBeam(
+            note: notePosition.note,
+            stemDirection: stemDirection,
+            beamStart: beamStart,
+            beamEnd: beamEnd,
+            x: notePosition.stem?.start.dx ?? 0,
+          );
+
+          return notePosition.copyWith(stem: stem);
+        }
+        return notePosition;
+      }).toList());
+    }).toList();
+
+    final beam = stems.isEmpty ? Vector.zero : Vector(start: beamStart, end: beamEnd);
+
+    return BeamGroupPosition(stemCorrectedNoteGroupPositions, beam, noteX);
   }
 
   bool groupChangesDirection(List<NoteGroup> noteGroups) {
@@ -195,6 +236,22 @@ class StaffPainterPositioning {
     final yStart = headY * (stemDirection == StemDirection.up ? stemYstartOffset : (1 / stemYstartOffset));
     final yEnd = yStart + (staffHeight * .75 * stemMultiplier);
     return Vector.vertical(yStart: yStart, yEnd: yEnd, x: x);
+  }
+
+  Vector getStemVectorForBeam({
+    required Note note,
+    required StemDirection stemDirection,
+    required Offset beamStart,
+    required Offset beamEnd,
+    double x = 0,
+  }) {
+    final originalStem = getStemVector(note: note, stemDirection: stemDirection, x: x);
+    final yEnd = pointOnLine(beamStart, beamEnd, x);
+    final val = Vector.vertical(yStart: originalStem.start.dy, yEnd: yEnd, x: x);
+    if (val != originalStem) {
+      log.w("Changing stem: $originalStem -> $val");
+    }
+    return val;
   }
 
   // Style

@@ -20,5 +20,19 @@ class Vector {
   double get height => (end.dy - start.dy).abs();
 
   @override
+  int get hashCode => dataHashCode;
+
+  @override
+  bool operator ==(other) => dataEquals(other);
+
+  @override
   String toString() => dataToString();
+}
+
+double pointOnLine(Offset start, Offset end, double x) {
+  if (start.dx == end.dx) {
+    return start.dy;
+  }
+  final val = (end.dy - start.dy) / (end.dx - start.dx) * (x - start.dx) + start.dy;
+  return val;
 }
